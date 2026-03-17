@@ -1,30 +1,37 @@
-# Agent Skills
+# Ultimate Commit Reviewer
 
-Skills for Claude Code, installable via [`npx skill`](https://www.npmjs.com/package/skill).
+A Claude Code hook that spawns 6 parallel review agents after every `git commit`. Each agent reviews your diff for a specific concern and fixes issues directly.
 
-## Install a skill
+## Install
 
-```bash
-SKILL_BASE_URL=https://github.com/firstfloris/agent-skills/tree/main npx skill skills/ultimate-commit-reviewer
+Copy this into Claude Code:
+
+```
+Install the ultimate-commit-reviewer hook in this project. Run these two commands:
+
+1. SKILL_BASE_URL=https://github.com/firstfloris/agent-skills/tree/main npx skill skills/ultimate-commit-reviewer
+2. bash .codebuddy/skills/ultimate-commit-reviewer/scripts/install.sh
 ```
 
-Then follow the instructions in the skill's `SKILL.md`.
+## What it does
 
-## Available skills
+After every `git commit`, Claude automatically spawns these review agents in parallel:
 
-### ultimate-commit-reviewer
+| # | Agent | What it checks |
+|---|-------|----------------|
+| 1 | **Documentation** | CLAUDE.md/AGENTS.md staleness when src/ changes |
+| 2 | **Dead Code** | Unused imports, console.log, commented-out code |
+| 3 | **UI Polish** | Jakub Krehel + Vercel Web Interface Guidelines |
+| 4 | **Design Engineering** | Emil Kowalski animation/transition principles |
+| 5 | **Security** | XSS, injection, secrets, SSRF, auth, data exposure |
+| 6 | **Deslopify** | Empty catches, debounce hacks, over-defensive nulls |
 
-Post-commit hook that spawns 6 parallel review agents after every `git commit`:
+Each agent only runs when relevant files are changed (e.g. UI agents only trigger on `.tsx`/`.css` files).
 
-1. **Documentation Review** — checks if CLAUDE.md/AGENTS.md need updating
-2. **Dead Code & Deprecation** — unused imports, console.log, commented code
-3. **UI Polish** — Jakub Krehel + Vercel Web Interface Guidelines
-4. **Design Engineering** — Emil Kowalski animation/transition principles
-5. **Security** — XSS, injection, secrets, SSRF, auth
-6. **Deslopify** — sloppy patterns like empty catches, debounce hacks, over-defensive nulls
+## Customize
 
-After installing, run:
+Edit `.claude/hooks/post-commit-review.sh` to add/remove agents or change review criteria.
 
-```bash
-bash .codebuddy/skills/ultimate-commit-reviewer/scripts/install.sh
-```
+## Uninstall
+
+Delete `.claude/hooks/post-commit-review.sh` and remove the `PostToolUse` entry from `.claude/settings.json`.
